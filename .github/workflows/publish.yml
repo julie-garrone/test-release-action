@@ -2,7 +2,6 @@ name: Add asset to publication
 on:
   release:
     types: [published]
-env:
 
 jobs:
   add-asset:
