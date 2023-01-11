@@ -1,21 +1,20 @@
-name: Add asset to publication
+name: Add assets to published release
 on:
   release:
     types: [published]
 
 jobs:
-  add-asset:
+  deliver-src-test-script:
+    name: Deliver src-test-script.zip
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Create zip
+      - name: Create zip file
         run: |
           cd src
           zip -r src-test-script test -x "test/images/*"
           cd -
-          ls -al
-          ls -al src/
       - name: Upload Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
