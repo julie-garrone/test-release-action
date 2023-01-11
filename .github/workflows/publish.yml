@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}/assets{?name,label}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: src/src-test-script.zip
           asset_name: src-test-script.zip
           asset_content_type: application/zip
