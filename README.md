@@ -1,1 +1,1 @@
-# test-realese-action
+# test-release-action
