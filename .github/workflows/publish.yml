@@ -14,13 +14,15 @@ jobs:
           cd src
           zip -r src-test-script test -x "test/images/*"
           cd -
+          ls -al
+          ls -al src/
       - name: Upload Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.url }}/assets{?name,label}
+          upload_url: ${{ github.event.release.upload_url }}/assets{?name,label}
           asset_path: src/src-test-script.zip
           asset_name: src-test-script.zip
           asset_content_type: application/zip
