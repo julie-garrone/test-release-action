@@ -25,3 +25,19 @@ jobs:
           asset_path: src/src-test-script.zip
           asset_name: src-test-script.zip
           asset_content_type: application/zip
+      - name: Create branch
+        run: git checkout -b ${{ github.event.release.tag_name }}
+      - name: Udpate Download link in README
+        run: |
+          search="releases/latest/download"
+          replace="releases/${branch_tag}/download"
+          sed -i "s/${search}/${replace}/" README.md
+      - name: Setup git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+      - name: Commit
+        run: |
+          git add README.md
+          git commit -m "new date commit"
+          git push origin ${{ github.event.release.tag_name }}
