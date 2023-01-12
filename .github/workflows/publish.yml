@@ -39,5 +39,5 @@ jobs:
       - name: Commit
         run: |
           git add README.md
-          git commit -m "new date commit"
-          git push origin ${{ github.event.release.tag_name }}
+          git commit -m "Update Download link with tagged asset url"
+          git push origin refs/heads/${{ github.event.release.tag_name }}
