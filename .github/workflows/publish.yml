@@ -31,7 +31,7 @@ jobs:
         run: |
           search="releases/latest/download"
           replace="releases/${branch_tag}/download"
-          sed -i "s/${search}/${replace}/" README.md
+          sed -i "s|${search}|${replace}|" README.md
       - name: Setup git config
         run: |
           git config user.name "GitHub Actions Bot"
