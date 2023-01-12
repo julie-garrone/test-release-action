@@ -30,12 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: deliver-src-test-script
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
       - name: Create branch
         run: git checkout -b ${{ github.event.release.tag_name }}
       - name: Udpate Download link in README
         run: |
           search="releases/latest/download"
-          replace="releases/${{ github.event.release.tag_name }}/download"
+          replace="releases/download/${{ github.event.release.tag_name }}"
           sed -i "s|${search}|${replace}|" README.md
       - name: Setup git config
         run: |
