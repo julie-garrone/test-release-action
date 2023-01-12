@@ -30,7 +30,7 @@ jobs:
       - name: Udpate Download link in README
         run: |
           search="releases/latest/download"
-          replace="releases/${branch_tag}/download"
+          replace="releases/${{ github.event.release.tag_name }}/download"
           sed -i "s|${search}|${replace}|" README.md
       - name: Setup git config
         run: |
