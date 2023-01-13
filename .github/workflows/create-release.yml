@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Create Release
-        id: create_release
+        id: create-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -25,6 +25,8 @@ jobs:
             - Second Change
           draft: true
           prerelease: false
+    outputs:
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
   deliver-src-test-script:
     name: Deliver src-test-script.zip
     runs-on: ubuntu-latest
@@ -43,7 +45,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.create-release.upload_url }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: src/src-test-script.zip
           asset_name: src-test-script.zip
           asset_content_type: application/zip
