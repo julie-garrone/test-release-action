@@ -28,7 +28,7 @@ jobs:
   deliver-src-test-script:
     name: Deliver src-test-script.zip
     runs-on: ubuntu-latest
-    needs: deliver-src-test-script
+    needs: create-release
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
