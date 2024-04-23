@@ -6,5 +6,6 @@
 
 This repository has been used to test a github action workflow that add a zip asset to a published release.
 
+
 > [!WARNING]  
 > To be able to add a zip file to a published release you have to set **Workflow permissions** to *Read and write permissions* in **Settings** / **Actions** / **General**.
