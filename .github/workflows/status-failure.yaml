@@ -1,0 +1,13 @@
+name: "Fail status"
+
+on:
+  pull_request:
+    types: synchronize
+    branches:
+      - master
+jobs:
+  fail:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fail
+      run: exit 1
