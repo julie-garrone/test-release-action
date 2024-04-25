@@ -10,21 +10,17 @@ jobs:
       github.event.state == 'failure'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v6
+      - uses: actions/checkout@v1
+      - name: Get relevant PR
+        uses: jwalton/gh-find-current-pr@v1
         id: get-pr-data
         with:
-          script: |
-              return (
-                await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                  commit_sha: github.sha,
-                  owner: github.repository_owner,
-                  repo: github.repository,
-                })
-              ).data[0];
-      - name: Dump GitHub context
+          sha: ${{ github.event.sha }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo "Found PR ${PR}"
+        if: success() && steps.get-pr-data.outputs.number
         env:
-          PR_DATA: ${{ steps.get_pr_data.outputs.result }}
-        run: echo "$PR_DATA"
+          PR: ${{ steps.get-pr-data.outputs.number }}
       - name: Get squad
         uses: actions-ecosystem/action-regex-match@v2
         if: fromJson(steps.get_pr_data.outputs.result).state == 'open'
