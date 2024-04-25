@@ -1,0 +1,44 @@
+name: "Notify when CI failing in PR"
+
+on:
+  status
+
+jobs:
+  notify-if-fail:
+    if: |
+      github.event.state == 'error' ||
+      github.event.state == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        id: get-pr-data
+        with:
+          script: |
+              return (
+                await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  commit_sha: github.sha,
+                  owner: github.repository_owner,
+                  repo: github.repository,
+                })
+              ).data[0];
+      - name: Dump GitHub context
+        env:
+          PR_DATA: ${{ steps.get_pr_data.outputs.result }}
+        run: echo "$PR_DATA"
+      - name: Get squad
+        uses: actions-ecosystem/action-regex-match@v2
+        if: fromJson(steps.get_pr_data.outputs.result).state == 'open'
+        id: get-squad
+        with:
+          text: ${{ fromJson(steps.get_pr_data.outputs.result).title }}
+          regex: '^Test to add comment tagging (.*)'
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        if: steps.get-squad.outputs.group1
+        with:
+          issue-number: ${{ fromJson(steps.get_pr_data.outputs.result).number }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          body: |
+            Le build de la documentation est en erreur.
+            @${{ steps.get-squad.outputs.group1 }} Merci de corriger dans votre repository et de fermer cette PR.
+
