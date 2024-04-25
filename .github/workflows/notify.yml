@@ -25,7 +25,7 @@ jobs:
         uses: actions-ecosystem/action-regex-match@v2
         id: get-squad
         with:
-          text: ${{ steps.get_pr_data.outputs.title }}
+          text: ${{ steps.get-pr-data.outputs.title }}
           regex: '^(Test to add comment tagging) (.*)$'
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v4
