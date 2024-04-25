@@ -26,14 +26,13 @@ jobs:
         id: get-squad
         with:
           text: ${{ steps.get_pr_data.outputs.title }}
-          regex: '^Test to add comment tagging (.*)$'
+          regex: '^(Test to add comment tagging) (.*)$'
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v4
-        if: steps.get-squad.outputs.group1
+        if: steps.get-squad.outputs.group2
         with:
           issue-number: ${{ steps.get-pr-data.outputs.number }}
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           body: |
             Le build de la documentation est en erreur.
-            @${{ steps.get-squad.outputs.group1 }} Merci de corriger dans votre repository et de fermer cette PR.
+            @${{ steps.get-squad.outputs.group2 }} Merci de corriger dans votre repository et de fermer cette PR.
 
