@@ -23,16 +23,15 @@ jobs:
           PR: ${{ steps.get-pr-data.outputs.number }}
       - name: Get squad
         uses: actions-ecosystem/action-regex-match@v2
-        if: fromJson(steps.get_pr_data.outputs.result).state == 'open'
         id: get-squad
         with:
-          text: ${{ fromJson(steps.get_pr_data.outputs.result).title }}
+          text: ${{ steps.get_pr_data.outputs.title }}
           regex: '^Test to add comment tagging (.*)'
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v4
         if: steps.get-squad.outputs.group1
         with:
-          issue-number: ${{ fromJson(steps.get_pr_data.outputs.result).number }}
+          issue-number: ${{ steps.get-pr-data.outputs.number }}
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           body: |
             Le build de la documentation est en erreur.
