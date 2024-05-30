@@ -16,7 +16,7 @@ jobs:
         uses: actions-ecosystem/action-regex-match@v2
         id: parse-summary
         with:
-          text: ${{ github.event.check_run.output.summary }}
+          text: "${{ github.event.check_run.output.summary }}"
           regex: '(\!\[.*\]\(.*\)).*#[^#]*## ([^#]*)## ([^\*]*)\*.*\* (.*)\\n\\n(\[.*\]\(.*\))'
 
       - name: Create comment
