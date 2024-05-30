@@ -1,7 +1,8 @@
 name: Add SonarQube comment from check result
 
 on:
-  check_run: [completed]
+  check_run: 
+    types: [completed]
 
 jobs:
   testenv:
