@@ -19,6 +19,16 @@ jobs:
           text: "${{ github.event.check_run.output.summary }}"
           regex: '(\!\[.*\]\(.*\)[^#]*)#[^#]*## ([^#]*)## ([^\*]*)\*.*\* (.*)[\S\s]*(\[.*\]\(.*\))'
 
+      - name: Get Sonar Comment
+        id: get-sonar-comment
+        uses: peter-evans/find-comment@v3
+        env:
+          PROJECT_NAME: ${{ steps.parse-summary.outputs.group4 }}
+        with:
+          issue-number: ${{ env.PR_NUMBER }}
+          # comment-author:
+          body-regex: 'test-project-name[\S\s]*Analysis Details[\S\s]*'
+
       - name: Get Sonar app token
         id: get_sonar_app_token
         uses: machine-learning-apps/actions-app-token@master
@@ -27,6 +37,7 @@ jobs:
           APP_ID: ${{ secrets.SONAR_APP_ID }}
 
       - name: Create comment
+        if: steps.get-sonar-comment.outputs.comment-id == ''
         uses: peter-evans/create-or-update-comment@v4
         env:
           SONAR_STATUS: ${{ steps.parse-summary.outputs.group1 }}
@@ -36,6 +47,35 @@ jobs:
           SONAR_LINK: ${{ steps.parse-summary.outputs.group5 }}
         with:
           issue-number: ${{ env.PR_NUMBER }}
+          token: ${{ steps.get_sonar_app_token.outputs.app_token }}
+          body: |
+            ## ${{ env.PROJECT_NAME }}  - ${{ env.SONAR_STATUS }}
+            <details>
+            <summary>
+
+            ### Analysis Details
+
+            </summary>
+
+            #### ${{ env.ISSUE_REPORT }}
+
+            #### ${{ env.COVERAGE_REPORT }}
+
+            </details>
+
+            ${{ env.SONAR_LINK }}
+
+      - name: Update comment
+        if: steps.get-sonar-comment.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v1
+        env:
+          SONAR_STATUS: ${{ steps.parse-summary.outputs.group1 }}
+          ISSUE_REPORT: ${{ steps.parse-summary.outputs.group2 }}
+          COVERAGE_REPORT: ${{ steps.parse-summary.outputs.group3 }}
+          PROJECT_NAME: ${{ steps.parse-summary.outputs.group4 }}
+          SONAR_LINK: ${{ steps.parse-summary.outputs.group5 }}
+        with:
+          comment-id: ${{ steps.get-sonar-comment.outputs.comment-id }}
           token: ${{ steps.get_sonar_app_token.outputs.app_token }}
           body: |
             ## ${{ env.PROJECT_NAME }}  - ${{ env.SONAR_STATUS }}
