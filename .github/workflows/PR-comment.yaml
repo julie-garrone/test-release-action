@@ -1,0 +1,47 @@
+name: Add SonarQube comment from check result
+
+on:
+  check_run: [completed]
+
+jobs:
+  testenv:
+    if: ${{ github.event.check_run.pull_requests.0 && contains(github.event.check_run.name, 'Sonarqube Results') }}
+    runs-on: ubuntu-latest
+    env:
+      PR_NUMBER: ${{ github.event.check_run.pull_requests.0.number }}
+    steps:
+
+      - name: Parse check_run summary
+        uses: actions-ecosystem/action-regex-match@v2
+        id: parse-summary
+        with:
+          text: ${{ github.event.check_run.output.summary }}
+          regex: '(\!\[.*\]\(.*\)).*#[^#]*## ([^#]*)## ([^\*]*)\*.*\* (.*)\\n\\n(\[.*\]\(.*\))'
+
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        env:
+          SONAR_STATUS: ${{ steps.parse-summary.group1 }}
+          ISSUE_REPORT: ${{ steps.parse-summary.group2 }}
+          COVERAGE_REPORT: ${{ steps.parse-summary.group3 }}
+          PROJECT_NAME: ${{ steps.parse-summary.group4 }}
+          SONAR_LINK: ${{ steps.parse-summary.group5 }}
+        with:
+          issue-number: ${{ env.PR_NUMBER }}
+          token: ${{ secrets.SONAR_CLIENT_SECRET }}
+          body: |
+            ## ${{ env.PROJECT_NAME }}  - ${{ env.SONAR_STATUS }}
+            <details>
+            <summary>
+
+            ### Analysis Details
+
+            </summary>
+
+            #### ${{ env.ISSUE_REPORT }}
+
+            #### ${{ env.COVERAGE_REPORT }}
+
+            </details>
+
+            ${{ env.SONAR_LINK }}
