@@ -19,6 +19,13 @@ jobs:
           text: "${{ github.event.check_run.output.summary }}"
           regex: '(\!\[.*\]\(.*\)[^#]*)#[^#]*## ([^#]*)## ([^\*]*)\*.*\* (.*)[\S\s]*(\[.*\]\(.*\))'
 
+      - name: Get Sonar app token
+        id: get_sonar_app_token
+        uses: machine-learning-apps/actions-app-token@master
+        with:
+          APP_PEM: ${{ secrets.SONAR_APP_PEM }}
+          APP_ID: ${{ secrets.SONAR_APP_ID }}
+
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v4
         env:
@@ -29,7 +36,7 @@ jobs:
           SONAR_LINK: ${{ steps.parse-summary.group5 }}
         with:
           issue-number: ${{ env.PR_NUMBER }}
-          token: ${{ secrets.SONAR_CLIENT_SECRET }}
+          token: ${{ steps.get_sonar_app_token.outputs.app_token }}
           body: |
             ## ${{ env.PROJECT_NAME }}  - ${{ env.SONAR_STATUS }}
             <details>
