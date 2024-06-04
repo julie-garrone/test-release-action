@@ -27,7 +27,7 @@ jobs:
         with:
           issue-number: ${{ env.PR_NUMBER }}
           # comment-author:
-          body-regex: 'test-project-name[\S\s]*Analysis Details[\S\s]*'
+          body-regex: '${{ env.PROJECT_NAME }}[\S\s]*Analysis Details[\S\s]*'
 
       - name: Get Sonar app token
         id: get_sonar_app_token
