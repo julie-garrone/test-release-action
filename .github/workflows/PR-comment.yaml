@@ -1,0 +1,104 @@
+name: Reusable workflow to add SonarQube comment from check result
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+      pr_number:
+        required: true
+        type: string
+      check_run_summary:
+        required: true
+        type: string
+
+jobs:
+  sonar-pr-comment:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Parse check_run summary
+        uses: actions-ecosystem/action-regex-match@v2
+        id: parse-summary
+        with:
+          text: "${{ inputs.check_run_summary }}"
+          regex: '(\!\[.*\]\(.*\)[^#]*)#[^#]*## ([^#]*)## ([^\*]*)\*.*\* (.*)[\S\s]*(\[.*\]\(.*\))'
+
+      - name: Get Sonar Comment
+        id: get-sonar-comment
+        uses: peter-evans/find-comment@v3
+        env:
+          PROJECT_NAME: ${{ steps.parse-summary.outputs.group4 }}
+        with:
+          repository: ${{ inputs.repository }}
+          issue-number: ${{ inputs.pr_number }}
+          body-regex: '${{ env.PROJECT_NAME }}[\S\s]*Analysis Details[\S\s]*'
+
+      - name: Get Sonar app token
+        id: get_sonar_app_token
+        uses: machine-learning-apps/actions-app-token@master
+        with:
+          APP_PEM: ${{ secrets.SONAR_APP_PEM }}
+          APP_ID: ${{ secrets.SONAR_APP_ID }}
+
+      - name: Create comment
+        if: steps.get-sonar-comment.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v4
+        env:
+          SONAR_STATUS: ${{ steps.parse-summary.outputs.group1 }}
+          ISSUE_REPORT: ${{ steps.parse-summary.outputs.group2 }}
+          COVERAGE_REPORT: ${{ steps.parse-summary.outputs.group3 }}
+          PROJECT_NAME: ${{ steps.parse-summary.outputs.group4 }}
+          SONAR_LINK: ${{ steps.parse-summary.outputs.group5 }}
+        with:
+          repository: ${{ inputs.repository }}
+          issue-number: ${{ inputs.pr_number }}
+          token: ${{ steps.get_sonar_app_token.outputs.app_token }}
+          body: |
+            ## ${{ env.PROJECT_NAME }}  - ${{ env.SONAR_STATUS }}
+            <details>
+            <summary>
+
+            ### Analysis Details
+
+            </summary>
+
+            #### ${{ env.ISSUE_REPORT }}
+
+            #### ${{ env.COVERAGE_REPORT }}
+
+            </details>
+
+            ${{ env.SONAR_LINK }}
+
+      - name: Update comment
+        if: steps.get-sonar-comment.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v1
+        env:
+          SONAR_STATUS: ${{ steps.parse-summary.outputs.group1 }}
+          ISSUE_REPORT: ${{ steps.parse-summary.outputs.group2 }}
+          COVERAGE_REPORT: ${{ steps.parse-summary.outputs.group3 }}
+          PROJECT_NAME: ${{ steps.parse-summary.outputs.group4 }}
+          SONAR_LINK: ${{ steps.parse-summary.outputs.group5 }}
+        with:
+          repository: ${{ inputs.repository }}
+          comment-id: ${{ steps.get-sonar-comment.outputs.comment-id }}
+          token: ${{ steps.get_sonar_app_token.outputs.app_token }}
+          edit-mode: replace
+          body: |
+            ## ${{ env.PROJECT_NAME }}  - ${{ env.SONAR_STATUS }}
+            <details>
+            <summary>
+
+            ### Analysis Details
+
+            </summary>
+
+            #### ${{ env.ISSUE_REPORT }}
+
+            #### ${{ env.COVERAGE_REPORT }}
+
+            </details>
+
+            ${{ env.SONAR_LINK }}
