@@ -7,7 +7,7 @@ on:
 jobs:
   call-workflow-sonar-pr-comment:
     if: ${{ github.event.check_run.pull_requests != '[]' && contains(github.event.check_run.name, 'Sonarqube Results') }}
-    uses: julie-garrone/test-release-action/.github/workflows/sonar-pr-comment-reusable.yml@main
+    uses: julie-garrone/test-release-action/.github/workflows/PR-comment-reusable.yaml@main
     with:
       repository: ${{ github.repository }}
       pr_number: ${{ github.event.check_run.pull_requests[0].number }}
