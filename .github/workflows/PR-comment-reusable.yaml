@@ -1,0 +1,14 @@
+name: Call reusable workflow to add SonarQube comment from check result
+
+on:
+  check_run:
+    types: [completed]
+
+jobs:
+  call-workflow-sonar-pr-comment:
+    if: ${{ github.event.check_run.pull_requests != '[]' && contains(github.event.check_run.name, 'Sonarqube Results') }}
+    uses: julie-garrone/test-release-action/.github/workflows/sonar-pr-comment-reusable.yml@main
+    with:
+      repository: ${{ github.repository }}
+      pr_number: ${{ github.event.check_run.pull_requests[0].number }}
+      check_run_summary: ${{ github.event.check_run.output.summary }}
