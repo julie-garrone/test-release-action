@@ -10,7 +10,9 @@ jobs:
     strategy:
       matrix:
         app_name: ["test1", "test2"]
-    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  '[test1] Build' }}
+    env:
+      check_run_name: "[${{ matrix.app_name }}] Build"
+    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  check_run_name }}
     steps:
       - name: Debug context values
         run: |
