@@ -9,8 +9,10 @@ jobs:
     strategy:
       matrix:
         app_name: ["test1", "test2"]
+    env:
+      check_run_name: format('[{0}] Build', matrix.app_name)
     runs-on: arc-runner-set
-    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name == '[' + matrix.app_name + '] Build' }}
+    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  $check_run_name}}
     steps:
       - name: Debug context values
         run: |
