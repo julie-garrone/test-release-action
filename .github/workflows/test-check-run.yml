@@ -10,7 +10,7 @@ jobs:
       matrix:
         app_name: ["test1", "test2"]
     runs-on: arc-runner-set
-    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  format('[{0}] Build', matrix.app_name)}}
+    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  '[test1] Build' }}
     steps:
       - name: Debug context values
         run: |
