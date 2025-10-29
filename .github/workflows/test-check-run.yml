@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Get app name
         run: |
-          string=${{ github.event.check_run.name }}
+          string="${{ github.event.check_run.name }}"
           pattern='\[(.*)\] Build'
           if [[ $string =~ $pattern ]]; then
             echo "${BASH_REMATCH[0]}, ${BASH_REMATCH[1]}"
