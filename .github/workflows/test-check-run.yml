@@ -1,0 +1,23 @@
+name: Test check run
+
+on:
+  check_run:
+    types: [completed]
+
+jobs:
+  refresh-sat:
+    strategy:
+      matrix:
+        app_name: ["test1", "test2"]
+    runs-on: arc-runner-set
+    if: >-
+      github.event.check_run.conclusion == 'success' &&
+    # github.event.check_run.check_suite.head_branch == 'master' &&
+      github.event.check_run.name == '[' + matrix.app_name + '] Build'
+    steps:
+      - name: Debug context values
+        run: |
+          echo "Nom du check run reçu : ${{ github.event.check_run.name }}"
+          echo "Nom attendu pour ce job : [${{ matrix.app_name }}] Build"
+          echo "Nom commit github : ${{ github.sha }}"
+          echo "Nom commit check_run : ${{ github.event.check_run.head_sha }}"
