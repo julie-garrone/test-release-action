@@ -7,14 +7,18 @@ on:
 jobs:
   refresh-sat:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        app_name: ["test1", "test2"]
-    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  format('[{0}] Build', matrix.app_name) }}
+    if: ${{ github.event.check_run.conclusion == 'success' && (github.event.check_run.name ==  '[test1] Build' || github.event.check_run.name ==  '[test2] Build') }}
     steps:
+      - name: Get app name
+        uses: actions-ecosystem/action-regex-match@v2
+        id: app-name
+        with:
+          text: ${{ github.event.check_run.name }}
+          regex: '\[(.*)\] Build'
+          
       - name: Debug context values
         run: |
           echo "Nom du check run reçu : ${{ github.event.check_run.name }}"
-          echo "Nom attendu pour ce job : [${{ matrix.app_name }}] Build"
+          echo "Nom attendu pour ce job : [${{ steps.app-name.outputs.group1 }}] Build"
           echo "Nom commit github : ${{ github.sha }}"
           echo "Nom commit check_run : ${{ github.event.check_run.head_sha }}"
