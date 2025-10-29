@@ -6,6 +6,7 @@ on:
 
 jobs:
   refresh-sat:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         app_name: ["test1", "test2"]
