@@ -12,7 +12,7 @@ jobs:
         app_name: ["test1", "test2"]
     env:
       check_run_name: "[${{ matrix.app_name }}] Build"
-    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  check_run_name }}
+    if: ${{ github.event.check_run.conclusion == 'success' && github.event.check_run.name ==  $check_run_name }}
     steps:
       - name: Debug context values
         run: |
