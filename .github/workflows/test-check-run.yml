@@ -22,6 +22,6 @@ jobs:
       - name: Debug context values
         run: |
           echo "Nom du check run reçu : ${{ github.event.check_run.name }}"
-          echo "Nom attendu pour ce job : [${{ steps.get-app-name.outputs.SELECTED_COLOR }}] Build"
+          echo "Nom attendu pour ce job : [${{ steps.get-app-name.outputs.app_name }}] Build"
           echo "Nom commit github : ${{ github.sha }}"
           echo "Nom commit check_run : ${{ github.event.check_run.head_sha }}"
