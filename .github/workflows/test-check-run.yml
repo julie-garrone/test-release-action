@@ -5,7 +5,7 @@ on:
     types: [completed]
 
 jobs:
-  refresh-sat:
+  test-check-run:
     runs-on: ubuntu-latest
     if: ${{ github.event.check_run.conclusion == 'success' && (github.event.check_run.name ==  '[test1] Build' || github.event.check_run.name ==  '[test2] Build') }}
     steps:
@@ -15,7 +15,6 @@ jobs:
           string="${{ github.event.check_run.name }}"
           pattern='\[(.*)\] Build'
           if [[ $string =~ $pattern ]]; then
-            echo "${BASH_REMATCH[0]}, ${BASH_REMATCH[1]}"
             echo "app_name=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
           fi
       
